@@ -9,8 +9,8 @@
 
   <Identity
     Name="32615Elepover.NotificationForwarder"
-    Publisher="CN=BE1ADC9A-643C-40F7-B474-D006EA7EFC44"
-    Version="1.3.27.0" />
+    Publisher="CN=storm"
+    Version="1.0.4.0" />
 
   <mp:PhoneIdentity PhoneProductId="0318cd22-d177-4614-b6de-243a5d11f676" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -40,10 +40,6 @@
         BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="landscape"/>
-          <uap:Rotation Preference="portrait"/>
-          <uap:Rotation Preference="portraitFlipped"/></uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>

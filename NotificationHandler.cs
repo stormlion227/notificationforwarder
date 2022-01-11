@@ -14,21 +14,21 @@ namespace Notification_Forwarder
             if (e.ChangeKind != UserNotificationChangedKind.Added) return;
             try
             {
-                var notifs = await Listener.GetNotificationsAsync(NotificationKinds.Toast);
-                var newlyAdded = notifs.Except(Notifications, new NotificationComparer()).ToList();
-                Conf.Log($"received {newlyAdded.Count} notification(s) from listener");
-                NewNotificationPool.AddRange(newlyAdded);
-                Notifications.AddRange(newlyAdded);
-                foreach (var item in newlyAdded)
+                var notification = Listener.GetNotification(e.UserNotificationId);
+                Conf.Log($"received a notification from listener");
+
+                NewNotificationPool.Add(notification);
+                Notifications.Add(notification);
+
+                Conf.CurrentConf.AddApp(new AppInfo(notification.AppInfo) { ForwardingEnabled = !Conf.CurrentConf.MuteNewApps });
+                var appIndex = Conf.CurrentConf.FindAppIndex(new AppInfo(notification.AppInfo));
+                if ((appIndex == -1 && !Conf.CurrentConf.MuteNewApps) ||
+                    (appIndex != -1 && Conf.CurrentConf.AppsToForward[appIndex].ForwardingEnabled))
                 {
-                    Conf.CurrentConf.AddApp(new AppInfo(item.AppInfo) { ForwardingEnabled = !Conf.CurrentConf.MuteNewApps });
-                    var appIndex = Conf.CurrentConf.FindAppIndex(new AppInfo(item.AppInfo));
-                    if (appIndex == -1 && !Conf.CurrentConf.MuteNewApps) continue;
-                    if (!Conf.CurrentConf.AppsToForward[appIndex].ForwardingEnabled) continue;
-                    Conf.Log($"marked notification #{item.Id} as pending, app: {item.AppInfo.AppUserModelId}");
-                    UnsentNotificationPool.Add(new Protocol.Notification(item));
+                    Conf.Log($"marked notification #{notification.Id} as pending, app: {notification.AppInfo.AppUserModelId}");
+                    UnsentNotificationPool.Add(new Protocol.Notification(notification));
                 }
-                Conf.CurrentConf.NotificationsReceived += newlyAdded.Count;
+                Conf.CurrentConf.NotificationsReceived++;
             }
             catch (Exception ex)
             {
